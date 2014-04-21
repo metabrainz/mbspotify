@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+# default postgres connect string
+PG_CONNECT = "dbname=mbspotify user=mbspotify"
+
+# use this connect string if postgres is running on TCP/IP port 5432
+#PG_CONNECT = "dbname=mbspotify user=mbspotify host=localhost port=5432"
+
+# Oher configuration options
+APP_NAME = "mbspotify-spotify"
+APP_VERSION = "0.1"
+USER_AGENT = APP_NAME + "/" + APP_VERSION

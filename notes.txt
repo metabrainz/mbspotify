@@ -1,0 +1,3 @@
+TODO:
+
+- Remove the extra table redundancy from DB
