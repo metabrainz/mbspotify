@@ -46,6 +46,38 @@ def add():
 
     return "{}"
 
+@app.route('/mapping/vote', methods=["POST"])
+def add():
+    user = request.json['user']
+    try:
+        val = uuid.UUID(user, version=4)
+    except ValueError:
+        raise BadRequest
+
+    mbid = request.json['mbid']
+    try:
+        val = uuid.UUID(mbid, version=4)
+    except ValueError:
+        raise BadRequest
+
+    conn = psycopg2.connect(config.PG_CONNECT)
+    cur = conn.cursor()
+
+    try:
+        cur.execute('''SELECT id FROM mapping WHERE mbid = %s''', (mbid,))
+        if not cur.rowcount:
+            raise BadRequest
+        row = cur.fetchone()
+
+        cur.execute('''INSERT INTO mapping_vote (mapping, cb_user) VALUES (%s, %s)''', (row[0], user))
+        conn.commit()
+
+    except psycopg2.IntegrityError, e:
+        raise BadRequest(str(e))
+    except psycopg2.OperationalError, e:
+        raise ServiceUnavailable(str(e))
+
+    return "{}"
 @app.route('/mapping', methods=["POST"])
 def mapping():
     id_tuple = tuple(request.json['mbids'])

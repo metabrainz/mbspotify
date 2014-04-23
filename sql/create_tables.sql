@@ -10,8 +10,7 @@ CREATE TABLE mapping (
 CREATE TABLE mapping_vote (
     id          SERIAL,
     mapping     INTEGER NOT NULL, -- references mapping
-    cb_user     UUID,
-    vote        SMALLINT
+    cb_user     UUID
 );
 
 ALTER TABLE mapping ADD CONSTRAINT mapping_pkey PRIMARY KEY (id);
