@@ -3,7 +3,9 @@
 import os
 import json
 import psycopg2
+import uuid
 from flask import Flask, request
+from werkzeug.exceptions import BadRequest, ServiceUnavailable
 import config
 
 app = Flask(__name__)
@@ -12,8 +14,36 @@ app = Flask(__name__)
 def index():
     return "<html>Piss off!</html>"
 
-@app.route('/mapping/add')
+@app.route('/mapping/add', methods=["POST"])
 def add():
+    user = request.json['user']
+    try:
+        val = uuid.UUID(user, version=4)
+    except ValueError:
+        raise BadRequest
+
+    mbid = request.json['mbid']
+    try:
+        val = uuid.UUID(mbid, version=4)
+    except ValueError:
+        raise BadRequest
+
+    uri = request.json['spotify_uri']
+    if not uri.startswith("spotify:album:"):
+        raise BadRequest
+
+    conn = psycopg2.connect(config.PG_CONNECT)
+    cur = conn.cursor()
+
+    try:
+        cur.execute('''INSERT INTO mapping (mbid, spotify_uri, cb_user) values (%s, %s, %s)''',
+                    (mbid, uri, user))
+        conn.commit()
+    except psycopg2.IntegrityError, e:
+        raise BadRequest(str(e))
+    except psycopg2.OperationalError, e:
+        raise ServiceUnavailable(str(e))
+
     return "{}"
 
 @app.route('/mapping', methods=["POST"])
