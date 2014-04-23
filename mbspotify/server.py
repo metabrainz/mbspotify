@@ -47,7 +47,7 @@ def add():
     return "{}"
 
 @app.route('/mapping/vote', methods=["POST"])
-def add():
+def vote():
     user = request.json['user']
     try:
         val = uuid.UUID(user, version=4)
@@ -78,6 +78,7 @@ def add():
         raise ServiceUnavailable(str(e))
 
     return "{}"
+
 @app.route('/mapping', methods=["POST"])
 def mapping():
     id_tuple = tuple(request.json['mbids'])
