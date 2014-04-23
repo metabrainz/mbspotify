@@ -12,15 +12,18 @@ app = Flask(__name__)
 def index():
     return "<html>Piss off!</html>"
 
+@app.route('/mapping/add')
+def add():
+    return "{}"
+
 @app.route('/mapping', methods=["POST"])
 def mapping():
-    id_list = ",".join([ "'%s'" % x for x in request.json['mbids']])
+    id_tuple = tuple(request.json['mbids'])
    
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    # TODO: Fix this with save parameter substitution
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid in (%s)''' % id_list)
+    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid in %s''' % (id_tuple,))
     
     data = {}
     for row in cur.fetchall():
