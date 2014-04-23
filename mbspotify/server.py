@@ -86,7 +86,7 @@ def mapping():
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid in %s''' % (id_tuple,))
+    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid in %s''', (id_tuple,))
     
     data = {}
     for row in cur.fetchall():
