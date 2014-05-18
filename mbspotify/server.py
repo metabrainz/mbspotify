@@ -4,7 +4,7 @@ import os
 import json
 import psycopg2
 import uuid
-from flask import Flask, request
+from flask import Flask, request, Response
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
 import config
 
@@ -44,7 +44,9 @@ def add():
     except psycopg2.OperationalError, e:
         raise ServiceUnavailable(str(e))
 
-    return "{}"
+    response = Response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/mapping/vote', methods=["POST"])
 def vote():
@@ -77,7 +79,9 @@ def vote():
     except psycopg2.OperationalError, e:
         raise ServiceUnavailable(str(e))
 
-    return "{}"
+    response = Response()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/mapping', methods=["POST"])
 def mapping():
@@ -92,7 +96,9 @@ def mapping():
     for row in cur.fetchall():
         data[row[0]] = row[1]
 
-    return json.dumps({ "mapping" : data})
+    response = Response(json.dumps({ "mapping" : data}), mimetype="application/json")
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
