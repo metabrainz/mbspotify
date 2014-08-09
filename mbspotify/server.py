@@ -10,6 +10,11 @@ from werkzeug.exceptions import BadRequest, ServiceUnavailable
 import config
 
 app = Flask(__name__)
+
+# Configuration
+app.config.from_object(config)
+
+# Error handling and logging
 handler = RotatingFileHandler("/tmp/mbspotify.log")
 handler.setLevel(logging.WARNING)
 app.logger.addHandler(handler)
