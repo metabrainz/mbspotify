@@ -3,11 +3,12 @@ import json
 import psycopg2
 import uuid
 import logging
+import config
+from decorators import key_required
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, Response
 from flask.ext.jsonpify import jsonify
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
-import config
 
 app = Flask(__name__)
 
@@ -26,6 +27,7 @@ def index():
 
 
 @app.route('/mapping/add', methods=["POST"])
+@key_required
 def add():
     user = request.json['user']
     try:
@@ -61,6 +63,7 @@ def add():
 
 
 @app.route('/mapping/vote', methods=["POST"])
+@key_required
 def vote():
     user = request.json['user']
     try:
