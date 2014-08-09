@@ -1,5 +1,0 @@
-To install the mbspotify database, you'll need Postgres 8.3 or greater
-
-pg_config will need to be on your path.
-
-Run setup.sh to create the database and prepare it for use
