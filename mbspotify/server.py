@@ -14,9 +14,11 @@ handler = RotatingFileHandler("/tmp/mbspotify.log")
 handler.setLevel(logging.WARNING)
 app.logger.addHandler(handler)
 
+
 @app.route('/')
 def index():
     return "<html>Piss off!</html>"
+
 
 @app.route('/mapping/add', methods=["POST"])
 def add():
@@ -51,6 +53,7 @@ def add():
     response = Response()
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
+
 
 @app.route('/mapping/vote', methods=["POST"])
 def vote():
@@ -87,6 +90,7 @@ def vote():
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
+
 @app.route('/mapping', methods=["POST"])
 def mapping():
     id_tuple = tuple(request.json['mbids'])
@@ -100,13 +104,13 @@ def mapping():
     for row in cur.fetchall():
         data[row[0]] = row[1]
 
-    response = Response(json.dumps({ "mapping" : data}), mimetype="application/json")
+    response = Response(json.dumps({"mapping": data}), mimetype="application/json")
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
+
 @app.route('/mapping-jsonp/<mbid>')
 def mapping_jsonp(mbid):
-
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
@@ -114,7 +118,8 @@ def mapping_jsonp(mbid):
     if not cur.rowcount:
         return jsonify({})
     row = cur.fetchone()
-    return jsonify({ mbid : row[1]})
+    return jsonify({mbid: row[1]})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
