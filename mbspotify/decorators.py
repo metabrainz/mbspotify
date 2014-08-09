@@ -6,7 +6,7 @@ from werkzeug.exceptions import BadRequest
 def key_required(f):
     @wraps(f)
     def wrapper(*args, **kwds):
-        if current_app.config['KEY'] != request.args.get('key'):
+        if request.args.get('key') not in current_app.config['ACCESS_KEYS']:
             raise BadRequest("You need to provide a key.")
         return f(*args, **kwds)
 
