@@ -33,25 +33,29 @@ def add():
     try:
         val = uuid.UUID(user, version=4)
     except ValueError:
-        raise BadRequest
+        raise BadRequest("Incorrect user ID (UUID).")
 
     mbid = request.json['mbid']
     try:
         val = uuid.UUID(mbid, version=4)
     except ValueError:
-        raise BadRequest
+        raise BadRequest("Incorrect MBID (UUID).")
 
     uri = request.json['spotify_uri']
     if not uri.startswith("spotify:album:"):
-        raise BadRequest
+        raise BadRequest("Incorrect Spotify URI. Only albums are supported now.")
 
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
     try:
-        cur.execute('''INSERT INTO mapping (mbid, spotify_uri, cb_user) values (%s, %s, %s)''',
-                    (mbid, uri, user))
-        conn.commit()
+        # Checking if mapping is already created
+        cur.execute('''SELECT id FROM mapping WHERE is_deleted = FALSE AND mbid = %s''', (mbid,))
+        if not cur.rowcount:
+            # And if it's not, add it!
+            cur.execute('''INSERT INTO mapping (mbid, spotify_uri, cb_user, is_deleted) values (%s, %s, %s, FALSE)''',
+                        (mbid, uri, user))
+            conn.commit()
     except psycopg2.IntegrityError, e:
         raise BadRequest(str(e))
     except psycopg2.OperationalError, e:
@@ -94,6 +98,21 @@ def vote():
     except psycopg2.OperationalError, e:
         raise ServiceUnavailable(str(e))
 
+    # Check if threshold is reached. And if it is, marking mapping as deleted.
+    try:
+        cur.execute('''SELECT *
+                       FROM mapping_vote
+                       JOIN mapping ON mapping_vote.mapping = mapping.id
+                       WHERE mapping.mbid = %s''', (mbid,))
+        if cur.rowcount >= app.config['THRESHOLD']:
+            cur.execute('''UPDATE mapping SET is_deleted = TRUE WHERE mbid = %s''', (mbid,))
+            conn.commit()
+
+    except psycopg2.IntegrityError, e:
+        raise BadRequest(str(e))
+    except psycopg2.OperationalError, e:
+        raise ServiceUnavailable(str(e))
+
     response = Response()
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
@@ -106,7 +125,7 @@ def mapping():
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid in %s''', (id_tuple,))
+    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE is_deleted = FALSE AND mbid in %s''', (id_tuple,))
     
     data = {}
     for row in cur.fetchall():
@@ -122,7 +141,7 @@ def mapping_jsonp(mbid):
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE mbid = %s''', (mbid,))
+    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE is_deleted = FALSE AND mbid = %s''', (mbid,))
     if not cur.rowcount:
         return jsonify({})
     row = cur.fetchone()
