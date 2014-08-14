@@ -1,8 +1,11 @@
 # PostgreSQL connection string
 # See http://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING
-PG_CONNECT = "dbname=mbspotify user=mbspotify host=localhost port=5432"
+PG_CONNECT = "dbname=mbspotify user=mbspotify password=mbspotify host=localhost port=5432"
 
 # List of keys that is used to verify incoming requests
 ACCESS_KEYS = [
     "CHANGE_ME",
-    ]
+]
+
+# Number of votes required to delete a mapping
+THRESHOLD = 4
