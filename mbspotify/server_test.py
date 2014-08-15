@@ -67,4 +67,17 @@ class ServerTest(TestCase):
         self.client.post("mapping/add?key=%s" % self.app.config['ACCESS_KEYS'][0], headers=json_headers,
                          data=json.dumps({'mbid': mbid, 'spotify_uri': spotify_uri, 'user': users[0]}))
 
+        # Let's try voting multiple times as the same user.
+        for n in xrange(10):
+            self.client.post("/mapping/vote?key=%s" % self.app.config['ACCESS_KEYS'][0], headers=json_headers,
+                             data=json.dumps({'mbid': mbid, 'user': users[0]}))
+
+        # Mapping should still be there.
+        response = self.client.post("/mapping", headers=json_headers, data=json.dumps({'mbids': [mbid]}))
+        self.assertEquals(response.json, dict(mapping={mbid: spotify_uri}))
+
+        # Same in JSONP endpoint.
+        response = self.client.get("/mapping-jsonp/%s" % mbid)
+        self.assertEquals(response.json, {mbid: spotify_uri})
+
         # How cool is that?!
