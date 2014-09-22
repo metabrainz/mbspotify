@@ -105,6 +105,12 @@ def vote():
             raise BadRequest("Can't find mapping between specified MBID and Spotify URI.")
         mapping_id = cur.fetchone()[0]
 
+        # Checking if user have already voted
+        cur.execute("SELECT id FROM mapping_vote WHERE mapping = %s AND cb_user = %s",
+                    (mapping_id, user))
+        if cur.rowcount:
+            raise BadRequest("You already voted against this mapping.")
+
         cur.execute("INSERT INTO mapping_vote (mapping, cb_user) VALUES (%s, %s)",
                     (mapping_id, user))
         conn.commit()
@@ -119,8 +125,8 @@ def vote():
         cur.execute("SELECT * "
                     "FROM mapping_vote "
                     "JOIN mapping ON mapping_vote.mapping = mapping.id "
-                    "WHERE mapping.mbid = %s",
-                    (mbid, ))
+                    "WHERE mapping.mbid = %s AND mapping.spotify_uri = %s AND mapping.is_deleted = FALSE",
+                    (mbid, spotify_uri))
         if cur.rowcount >= app.config["THRESHOLD"]:
             cur.execute("UPDATE mapping SET is_deleted = TRUE "
                         "WHERE mbid = %s AND spotify_uri = %s",
