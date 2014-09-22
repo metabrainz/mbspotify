@@ -26,34 +26,47 @@ def index():
     return "<html>Piss off!</html>"
 
 
-@app.route('/mapping/add', methods=["POST"])
+@app.route("/mapping/add", methods=["POST"])
 @key_required
 def add():
-    user = request.json['user']
+    """Endpoint for adding new mappings to Spotify.
+
+    Only connection to albums on Spotify is supported right now.
+
+    JSON parameters:
+        user: UUID of the user who is adding new mapping.
+        mbid: MusicBrainz ID of an entity that is being connected.
+        spotify_uri: Spotify URI of an album that is being connected.
+    """
+    user = request.json["user"]
     try:
         val = uuid.UUID(user, version=4)
     except ValueError:
         raise BadRequest("Incorrect user ID (UUID).")
 
-    mbid = request.json['mbid']
+    mbid = request.json["mbid"]
     try:
         val = uuid.UUID(mbid, version=4)
     except ValueError:
         raise BadRequest("Incorrect MBID (UUID).")
 
-    uri = request.json['spotify_uri']
+    uri = request.json["spotify_uri"]
     if not uri.startswith("spotify:album:"):
-        raise BadRequest("Incorrect Spotify URI. Only albums are supported now.")
+        raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
     try:
         # Checking if mapping is already created
-        cur.execute('''SELECT id FROM mapping WHERE is_deleted = FALSE AND mbid = %s''', (mbid,))
+        cur.execute("SELECT id FROM mapping "
+                    "WHERE is_deleted = FALSE "
+                    "AND mbid = %s "
+                    "AND spotify_uri = %s", (mbid, uri))
         if not cur.rowcount:
-            # And if it's not, add it!
-            cur.execute('''INSERT INTO mapping (mbid, spotify_uri, cb_user, is_deleted) values (%s, %s, %s, FALSE)''',
+            # and if it's not, adding it
+            cur.execute("INSERT INTO mapping (mbid, spotify_uri, cb_user, is_deleted)"
+                        "VALUES (%s, %s, %s, FALSE)",
                         (mbid, uri, user))
             conn.commit()
     except psycopg2.IntegrityError, e:
@@ -62,7 +75,7 @@ def add():
         raise ServiceUnavailable(str(e))
 
     response = Response()
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 
