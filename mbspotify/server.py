@@ -137,21 +137,36 @@ def vote():
     return response
 
 
-@app.route('/mapping', methods=["POST"])
+@app.route("/mapping", methods=["POST"])
 def mapping():
-    id_tuple = tuple(request.json['mbids'])
+    """Endpoint for getting mappings for a MusicBrainz entity.
+
+    JSON parameters:
+        mbid: MBID of the entity that you need to find a mapping for.
+
+    Returns:
+        List with mappings to a specified MBID.
+    """
+    mbid = request.json["mbid"]
+    if not validate_uuid(mbid):
+        raise BadRequest("Incorrect MBID (UUID).")
    
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE is_deleted = FALSE AND mbid in %s''', (id_tuple,))
-    
-    data = {}
-    for row in cur.fetchall():
-        data[row[0]] = row[1]
+    cur.execute("SELECT spotify_uri "
+                "FROM mapping "
+                "WHERE is_deleted = FALSE AND mbid = %s",
+                (mbid,))
 
-    response = Response(json.dumps({"mapping": data}), mimetype="application/json")
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response = Response(
+        json.dumps({
+            "mbid": mbid,
+            "mappings": [row[0] for row in cur.fetchall()],
+        }),
+        mimetype="application/json"
+    )
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 
