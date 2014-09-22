@@ -21,7 +21,7 @@ handler.setLevel(logging.WARNING)
 app.logger.addHandler(handler)
 
 
-@app.route('/')
+@app.route("/")
 def index():
     return "<html>Piss off!</html>"
 
@@ -176,17 +176,24 @@ def mapping():
     return response
 
 
-@app.route('/mapping-jsonp/<mbid>')
+@app.route("/mapping-jsonp/<mbid>")
 def mapping_jsonp(mbid):
+    if not validate_uuid(mbid):
+        raise BadRequest("Incorrect MBID (UUID).")
+
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
-    cur.execute('''SELECT mbid, spotify_uri FROM mapping WHERE is_deleted = FALSE AND mbid = %s''', (mbid,))
+    cur.execute("SELECT mbid, spotify_uri "
+                "FROM mapping "
+                "WHERE is_deleted = FALSE AND mbid = %s",
+                (mbid,))
     if not cur.rowcount:
         return jsonify({})
+    # TODO: Return all mappings to a specified MBID.
     row = cur.fetchone()
     return jsonify({mbid: row[1]})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080)
