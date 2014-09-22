@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import json
 import psycopg2
-import uuid
 import logging
 import config
+from utils import validate_uuid
 from decorators import key_required
 from logging.handlers import RotatingFileHandler
 from flask import Flask, request, Response
@@ -39,15 +39,11 @@ def add():
         spotify_uri: Spotify URI of an album that is being connected.
     """
     user = request.json["user"]
-    try:
-        val = uuid.UUID(user, version=4)
-    except ValueError:
+    if not validate_uuid(user):
         raise BadRequest("Incorrect user ID (UUID).")
 
     mbid = request.json["mbid"]
-    try:
-        val = uuid.UUID(mbid, version=4)
-    except ValueError:
+    if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
     uri = request.json["spotify_uri"]
@@ -82,17 +78,13 @@ def add():
 @app.route('/mapping/vote', methods=["POST"])
 @key_required
 def vote():
-    user = request.json['user']
-    try:
-        val = uuid.UUID(user, version=4)
-    except ValueError:
-        raise BadRequest
+    user = request.json["user"]
+    if not validate_uuid(user):
+        raise BadRequest("Incorrect user ID (UUID).")
 
-    mbid = request.json['mbid']
-    try:
-        val = uuid.UUID(mbid, version=4)
-    except ValueError:
-        raise BadRequest
+    mbid = request.json["mbid"]
+    if not validate_uuid(mbid):
+        raise BadRequest("Incorrect MBID (UUID).")
 
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
