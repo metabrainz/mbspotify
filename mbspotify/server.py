@@ -190,7 +190,7 @@ def mapping_jsonp(mbid):
                 (mbid,))
     if not cur.rowcount:
         return jsonify({})
-    # TODO: Return all mappings to a specified MBID.
+    # TODO: Return all mappings to a specified MBID (don't forget to update userscript).
     row = cur.fetchone()
     return jsonify({mbid: row[1]})
 
