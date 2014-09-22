@@ -75,9 +75,16 @@ def add():
     return response
 
 
-@app.route('/mapping/vote', methods=["POST"])
+@app.route("/mapping/vote", methods=["POST"])
 @key_required
 def vote():
+    """Endpoint for voting against incorrect mappings.
+
+    JSON parameters:
+        user: UUID of the user who is voting.
+        mbid: MusicBrainz ID of an entity that has incorrect mapping.
+        spotify_uri: Spotify URI of an incorrectly mapped entity.
+    """
     user = request.json["user"]
     if not validate_uuid(user):
         raise BadRequest("Incorrect user ID (UUID).")
@@ -86,16 +93,20 @@ def vote():
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
+    spotify_uri = request.json["spotify_uri"]
+
     conn = psycopg2.connect(config.PG_CONNECT)
     cur = conn.cursor()
 
     try:
-        cur.execute('''SELECT id FROM mapping WHERE mbid = %s''', (mbid,))
+        cur.execute("SELECT id FROM mapping WHERE mbid = %s AND spotify_uri = %s",
+                    (mbid, spotify_uri))
         if not cur.rowcount:
-            raise BadRequest
-        row = cur.fetchone()
+            raise BadRequest("Can't find mapping between specified MBID and Spotify URI.")
+        mapping_id = cur.fetchone()[0]
 
-        cur.execute('''INSERT INTO mapping_vote (mapping, cb_user) VALUES (%s, %s)''', (row[0], user))
+        cur.execute("INSERT INTO mapping_vote (mapping, cb_user) VALUES (%s, %s)",
+                    (mapping_id, user))
         conn.commit()
 
     except psycopg2.IntegrityError, e:
@@ -105,12 +116,15 @@ def vote():
 
     # Check if threshold is reached. And if it is, marking mapping as deleted.
     try:
-        cur.execute('''SELECT *
-                       FROM mapping_vote
-                       JOIN mapping ON mapping_vote.mapping = mapping.id
-                       WHERE mapping.mbid = %s''', (mbid,))
-        if cur.rowcount >= app.config['THRESHOLD']:
-            cur.execute('''UPDATE mapping SET is_deleted = TRUE WHERE mbid = %s''', (mbid,))
+        cur.execute("SELECT * "
+                    "FROM mapping_vote "
+                    "JOIN mapping ON mapping_vote.mapping = mapping.id "
+                    "WHERE mapping.mbid = %s",
+                    (mbid, ))
+        if cur.rowcount >= app.config["THRESHOLD"]:
+            cur.execute("UPDATE mapping SET is_deleted = TRUE "
+                        "WHERE mbid = %s AND spotify_uri = %s",
+                        (mbid, spotify_uri))
             conn.commit()
 
     except psycopg2.IntegrityError, e:
@@ -119,7 +133,7 @@ def vote():
         raise ServiceUnavailable(str(e))
 
     response = Response()
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 
