@@ -13,7 +13,8 @@ PG_HBA="/etc/postgresql/$PG_VERSION/main/pg_hba.conf"
 PG_DIR="/var/lib/postgresql/$PG_VERSION/main"
 
 # Setting up PostgreSQL access
-echo "local all all trust" >> "$PG_HBA"
+sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" "$PG_CONF"
+echo "host all all all trust" >> "$PG_HBA"
 
 # Explicitly set default client_encoding
 echo "client_encoding = utf8" >> "$PG_CONF"
