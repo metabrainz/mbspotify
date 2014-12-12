@@ -14,6 +14,7 @@ PG_DIR="/var/lib/postgresql/$PG_VERSION/main"
 
 # Setting up PostgreSQL access
 sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" "$PG_CONF"
+sed -i "s/local\s*all\s*all\s*peer/local all all trust/" "$PG_HBA"
 echo "host all all all trust" >> "$PG_HBA"
 
 # Explicitly set default client_encoding

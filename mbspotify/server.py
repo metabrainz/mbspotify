@@ -2,6 +2,7 @@
 import json
 import psycopg2
 import logging
+import default_config
 import config
 from utils import validate_uuid
 from decorators import key_required
@@ -13,6 +14,7 @@ from werkzeug.exceptions import BadRequest, ServiceUnavailable
 app = Flask(__name__)
 
 # Configuration
+app.config.from_object(default_config)
 app.config.from_object(config)
 
 # Error handling and logging
@@ -50,7 +52,7 @@ def add():
     if not uri.startswith("spotify:album:"):
         raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     try:
@@ -95,7 +97,7 @@ def vote():
 
     spotify_uri = request.json["spotify_uri"]
 
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     try:
@@ -157,7 +159,7 @@ def mapping():
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
    
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     cur.execute("SELECT spotify_uri "
@@ -181,7 +183,7 @@ def mapping_jsonp(mbid):
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     cur.execute("SELECT mbid, spotify_uri "

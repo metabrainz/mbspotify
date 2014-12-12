@@ -1,11 +1,16 @@
-# PostgreSQL connection string
-# See http://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING
-PG_CONNECT = "dbname=mbspotify user=mbspotify password=mbspotify host=localhost port=5432"
+# -*- coding: utf-8 -*-
+# CUSTOM CONFIGURATION
 
 # List of keys that is used to verify incoming requests
 ACCESS_KEYS = [
     "CHANGE_ME",
 ]
 
+# Settings defined below have default values in default_config.py, but can be overridden in this file.
+
+# PostgreSQL connection string
+# See http://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING
+#PG_CONNECT = "dbname=mbspotify user=mbspotify password= host=localhost port=5432"
+
 # Number of votes required to delete a mapping
-THRESHOLD = 4
+#THRESHOLD = 4
