@@ -9,3 +9,12 @@ ACCESS_KEYS = [
 
 # Number of votes required to delete a mapping
 THRESHOLD = 4
+
+
+# LOGGING
+
+#LOG_FILE_ENABLED = True
+#LOG_FILE = "/tmp/mbspotify.log"
+
+#LOG_SENTRY_ENABLED = True
+#SENTRY_DSN = ""

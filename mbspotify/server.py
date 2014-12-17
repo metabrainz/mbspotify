@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 import json
 import psycopg2
-import logging
 import config
 from utils import validate_uuid
 from decorators import key_required
-from logging.handlers import RotatingFileHandler
 from flask import Flask, request, Response
 from flask.ext.jsonpify import jsonify
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
@@ -15,10 +13,9 @@ app = Flask(__name__)
 # Configuration
 app.config.from_object(config)
 
-# Error handling and logging
-handler = RotatingFileHandler("/tmp/mbspotify.log")
-handler.setLevel(logging.WARNING)
-app.logger.addHandler(handler)
+# Logging
+import loggers
+loggers.init_loggers(app)
 
 
 @app.route("/")
