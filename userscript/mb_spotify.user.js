@@ -3,7 +3,7 @@
 // @description
 // @version     1
 // @author      -
-// @namespace   http://critiquebrainz.org
+// @namespace   https://critiquebrainz.org
 //
 // @include     *://musicbrainz.org/release-group/*
 // @include     *://beta.musicbrainz.org/release-group/*
@@ -25,7 +25,7 @@ function injected() {
     var spotify_html_begin = '<iframe src="https://embed.spotify.com/?uri=';
     var spotify_html_end = '" width="218" height="80" style="margin-top: 10px" frameborder="0" allowtransparency="true"></iframe>';
 
-    var no_match_html_begin = '<div width="218" height="80" style="margin-top:5px; padding:3px; background-color:#ccc">This release-group has not been matched to Spotify. Please <a href="http://critiquebrainz.org/matching/spotify/';
+    var no_match_html_begin = '<div width="218" height="80" style="margin-top:5px; padding:3px; background-color:#ccc">This release-group has not been matched to Spotify. Please <a href="https://critiquebrainz.org/matching/';
     var no_match_html_end = '">match this release group</a>.</div>';
 
     var error_html = '<div width="218" height="80" style="margin-top:5px; padding:3px; background-color:#ccc">An error has occurred looking up the release-group match.</div>';
