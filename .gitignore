@@ -1,1 +1,17 @@
-.DS_Store
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Test results
+/cover/
+nosetests.xml
+.tox/
+.cache
+.coverage
+
+# Vagrant
+.vagrant
