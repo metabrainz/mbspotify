@@ -13,6 +13,15 @@
 
 function injected() {
 
+    function insertHTML(html) {
+        var cover_art = $(".cover-art");
+        if (cover_art.length > 0) { // if there's a cover art on the page
+            cover_art.append(html);
+        } else {
+            $("#sidebar").prepend(html);
+        }
+    }
+
     var spotify_html_begin = '<iframe src="https://embed.spotify.com/?uri=';
     var spotify_html_end = '" width="218" height="80" style="margin-top: 10px" frameborder="0" allowtransparency="true"></iframe>';
 
@@ -30,13 +39,13 @@ function injected() {
         contentType: "application/json; charset=utf-8",
         success: function (json) {
             if (json[mbid]) {
-                $(".cover-art").append(spotify_html_begin + json[mbid] + spotify_html_end);
+                insertHTML(spotify_html_begin + json[mbid] + spotify_html_end);
             } else {
-                $(".cover-art").append(no_match_html_begin + mbid + no_match_html_end);
+                insertHTML(no_match_html_begin + mbid + no_match_html_end);
             }
         },
         error: function () {
-            $(".cover-art").append(error_html);
+            insertHTML(error_html);
         }
     });
 
