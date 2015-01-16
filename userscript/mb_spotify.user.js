@@ -21,7 +21,7 @@ function injected() {
 
     var error_html = '<div width="218" height="80" style="margin-top:5px; padding:3px; background-color:#ccc">An error has occurred looking up the release-group match.</div>';
 
-    var mbid = window.location.pathname.substr(15);
+    var mbid = window.location.pathname.split("/")[2];
     $.ajax({
         url: "http://mbspotify.musicbrainz.org/mapping-jsonp/" + mbid,
         data: JSON.stringify({"mbids": [mbid]}),
