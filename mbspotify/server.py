@@ -4,9 +4,8 @@ import psycopg2
 import default_config
 import config
 from utils import validate_uuid
-from decorators import key_required
-from flask import Flask, request, Response
-from flask.ext.jsonpify import jsonify
+from decorators import key_required, jsonp
+from flask import Flask, request, Response, jsonify
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
 
 app = Flask(__name__)
@@ -176,6 +175,7 @@ def mapping():
 
 
 @app.route("/mapping-jsonp/<mbid>")
+@jsonp
 def mapping_jsonp(mbid):
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
