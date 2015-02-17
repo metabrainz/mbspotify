@@ -1,5 +1,5 @@
 import unittest
-import utils
+from mbspotify import utils
 
 
 class UtilsTestCase(unittest.TestCase):

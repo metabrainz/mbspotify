@@ -1,11 +1,11 @@
 from __future__ import print_function
-from flask.ext.testing import TestCase
-from server import app
+from flask_testing import TestCase
+from mbspotify import create_app
 import psycopg2
 import json
 
 
-class ServerTestCase(TestCase):
+class ViewsTestCase(TestCase):
 
     def setUp(self):
         self.mbid = "10000000-0000-0000-0000-000000000001"
@@ -31,6 +31,7 @@ class ServerTestCase(TestCase):
         conn.close()
 
     def create_app(self):
+        app = create_app()
         app.config["TESTING"] = True
         return app
 
@@ -38,10 +39,6 @@ class ServerTestCase(TestCase):
         response = self.client.get("/")
         # Index page should ask users to piss off.
         assert "Piss off!" in response.data
-
-    def test_add(self):
-        # TODO: Implement
-        pass
 
     def test_vote(self):
         # Adding a new mapping
@@ -94,7 +91,7 @@ class ServerTestCase(TestCase):
         })
 
         # Let"s try voting multiple times as the same user
-        for n in xrange(10):
+        for _ in xrange(10):
             self.client.post(
                 "/mapping/vote?key=%s" % self.app.config["ACCESS_KEYS"][0],
                 headers=self.json_headers,

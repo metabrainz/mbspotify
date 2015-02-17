@@ -1,30 +1,21 @@
 #!/usr/bin/env python
-import json
-import psycopg2
-import default_config
-import config
-from utils import validate_uuid
-from decorators import key_required, jsonp
-from flask import Flask, request, Response, jsonify
+from flask import Blueprint, request, Response, jsonify, current_app
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
-
-app = Flask(__name__)
-
-# Configuration
-app.config.from_object(default_config)
-app.config.from_object(config)
-
-# Logging
-import loggers
-loggers.init_loggers(app)
+from mbspotify.decorators import key_required, jsonp
+from mbspotify.utils import validate_uuid
+import psycopg2
+import json
 
 
-@app.route("/")
+main_bp = Blueprint('ws_review', __name__)
+
+
+@main_bp.route("/")
 def index():
     return "<html>Piss off!</html>"
 
 
-@app.route("/mapping/add", methods=["POST"])
+@main_bp.route("/mapping/add", methods=["POST"])
 @key_required
 def add():
     """Endpoint for adding new mappings to Spotify.
@@ -48,7 +39,7 @@ def add():
     if not uri.startswith("spotify:album:"):
         raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
-    conn = psycopg2.connect(app.config['PG_CONNECT'])
+    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     try:
@@ -73,7 +64,7 @@ def add():
     return response
 
 
-@app.route("/mapping/vote", methods=["POST"])
+@main_bp.route("/mapping/vote", methods=["POST"])
 @key_required
 def vote():
     """Endpoint for voting against incorrect mappings.
@@ -93,7 +84,7 @@ def vote():
 
     spotify_uri = request.json["spotify_uri"]
 
-    conn = psycopg2.connect(app.config['PG_CONNECT'])
+    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     try:
@@ -123,9 +114,11 @@ def vote():
         cur.execute("SELECT * "
                     "FROM mapping_vote "
                     "JOIN mapping ON mapping_vote.mapping = mapping.id "
-                    "WHERE mapping.mbid = %s AND mapping.spotify_uri = %s AND mapping.is_deleted = FALSE",
+                    "WHERE mapping.mbid = %s"
+                    "      AND mapping.spotify_uri = %s"
+                    "      AND mapping.is_deleted = FALSE",
                     (mbid, spotify_uri))
-        if cur.rowcount >= app.config["THRESHOLD"]:
+        if cur.rowcount >= current_app.config["THRESHOLD"]:
             cur.execute("UPDATE mapping SET is_deleted = TRUE "
                         "WHERE mbid = %s AND spotify_uri = %s",
                         (mbid, spotify_uri))
@@ -141,7 +134,7 @@ def vote():
     return response
 
 
-@app.route("/mapping", methods=["POST"])
+@main_bp.route("/mapping", methods=["POST"])
 def mapping():
     """Endpoint for getting mappings for a MusicBrainz entity.
 
@@ -154,8 +147,8 @@ def mapping():
     mbid = request.json["mbid"]
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
-   
-    conn = psycopg2.connect(app.config['PG_CONNECT'])
+
+    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     cur.execute("SELECT spotify_uri "
@@ -174,13 +167,13 @@ def mapping():
     return response
 
 
-@app.route("/mapping-jsonp/<mbid>")
+@main_bp.route("/mapping-jsonp/<mbid>")
 @jsonp
 def mapping_jsonp(mbid):
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
-    conn = psycopg2.connect(app.config['PG_CONNECT'])
+    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
     cur = conn.cursor()
 
     cur.execute("SELECT mbid, spotify_uri "
@@ -192,7 +185,3 @@ def mapping_jsonp(mbid):
     # TODO: Return all mappings to a specified MBID (don't forget to update userscript).
     row = cur.fetchone()
     return jsonify({mbid: row[1]})
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
