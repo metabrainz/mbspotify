@@ -63,9 +63,9 @@ def add():
                         "VALUES (%s, %s, %s, FALSE)",
                         (mbid, uri, user))
             conn.commit()
-    except psycopg2.IntegrityError, e:
+    except psycopg2.IntegrityError as e:
         raise BadRequest(str(e))
-    except psycopg2.OperationalError, e:
+    except psycopg2.OperationalError as e:
         raise ServiceUnavailable(str(e))
 
     response = Response()
@@ -113,9 +113,9 @@ def vote():
                     (mapping_id, user))
         conn.commit()
 
-    except psycopg2.IntegrityError, e:
+    except psycopg2.IntegrityError as e:
         raise BadRequest(str(e))
-    except psycopg2.OperationalError, e:
+    except psycopg2.OperationalError as e:
         raise ServiceUnavailable(str(e))
 
     # Check if threshold is reached. And if it is, marking mapping as deleted.
@@ -131,9 +131,9 @@ def vote():
                         (mbid, spotify_uri))
             conn.commit()
 
-    except psycopg2.IntegrityError, e:
+    except psycopg2.IntegrityError as e:
         raise BadRequest(str(e))
-    except psycopg2.OperationalError, e:
+    except psycopg2.OperationalError as e:
         raise ServiceUnavailable(str(e))
 
     response = Response()
