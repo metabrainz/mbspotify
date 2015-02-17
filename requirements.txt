@@ -8,5 +8,4 @@ Werkzeug == 0.9.4
 argparse == 1.2.1
 itsdangerous == 0.24
 psycopg2 == 2.5.3
-wsgiref == 0.1.2
 raven == 5.1.1
