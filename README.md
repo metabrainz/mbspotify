@@ -66,6 +66,6 @@ After that app is ready to go.
 
 ## Community
 
-If you want to discuss something, go to *#musicbrainz-devel* IRC channel on
+If you want to discuss something, go to *#metabrainz* IRC channel on
 irc.freenode.net. More info about available methods of getting in touch with
 community is available at https://wiki.musicbrainz.org/Communication.
