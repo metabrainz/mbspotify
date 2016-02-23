@@ -171,6 +171,8 @@ def mapping():
 def mapping_spotify():
     """Endpoint for getting MusicBrainz entities mapped to a Spotify URI."""
     uri = request.args.get("spotify_uri")
+    if uri is None:
+        raise BadRequest("`spotify_uri` argument is missing.")
     if not uri.startswith("spotify:album:"):
         raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
