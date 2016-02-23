@@ -157,6 +157,30 @@ class ViewsTestCase(TestCase):
             "mappings": [self.spotify_uri, self.another_spotify_uri],
         })
 
+    def mapping_spotify(self):
+        response = self.client.get("/mapping-spotify?spotify_uri=%s" % self.spotify_uri)
+        self.assertEquals(response.json, {
+            "mappings": [],
+        })
+
+        # Adding a new mapping
+        self.client.post(
+            "mapping/add?key=%s" % self.app.config["ACCESS_KEYS"][0],
+            headers=self.json_headers,
+            data=json.dumps({
+                "mbid": self.mbid,
+                "spotify_uri": self.spotify_uri,
+                "user": self.users[0]
+            })
+        )
+
+        response = self.client.get("/mapping-spotify?spotify_uri=%s" % self.spotify_uri)
+        self.assertEquals(response.json, {
+            "mappings": [
+                self.mbid,
+            ],
+        })
+
     def test_mapping_jsonp(self):
         response = self.client.get("/mapping-jsonp/%s" % self.mbid)
         self.assertEquals(response.json, {})

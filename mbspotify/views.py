@@ -167,6 +167,27 @@ def mapping():
     return response
 
 
+@main_bp.route("/mapping-spotify")
+def mapping_spotify():
+    """Endpoint for getting MusicBrainz entities mapped to a Spotify URI."""
+    uri = request.args.get("spotify_uri")
+    if not uri.startswith("spotify:album:"):
+        raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
+
+    conn = psycopg2.connect(current_app.config["PG_CONNECT"])
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT mbid::text
+          FROM mapping
+         WHERE is_deleted = FALSE AND spotify_uri = %s
+    """, (uri,))
+
+    return jsonify({
+        "mappings": [row[0] for row in cur.fetchall()],
+    })
+
+
 @main_bp.route("/mapping-jsonp/<mbid>")
 @jsonp
 def mapping_jsonp(mbid):
