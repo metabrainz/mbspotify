@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        MusicBrainz Spotify Integration
-// @description
+// @description Shows Spotify player on release group pages
 // @version     1
 // @author      -
 // @namespace   https://critiquebrainz.org
