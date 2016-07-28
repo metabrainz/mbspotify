@@ -1,17 +1,27 @@
-from flask import Flask
+from brainzutils.flask import CustomFlask
+import os
 
 
 def create_app():
-    app = Flask(__name__)
+    app = CustomFlask(
+        import_name=__name__,
+        use_flask_uuid=True,
+    )
 
-    # Configuration
-    import mbspotify.default_config
-    app.config.from_object(mbspotify.default_config)
-    app.config.from_pyfile('config.py')
+    # Configuration files
+    app.config.from_pyfile(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "..", "default_config.py"
+    ))
+    app.config.from_pyfile(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "..", "config.py"
+    ), silent=True)
 
-    # Logging
-    from mbspotify import loggers
-    loggers.init_loggers(app)
+    app.init_loggers(
+        file_config=app.config.get("LOG_FILE"),
+        sentry_config=app.config.get("LOG_SENTRY"),
+    )
 
     # Blueprints
     from mbspotify.views import main_bp

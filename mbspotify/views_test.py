@@ -22,7 +22,7 @@ class ViewsTestCase(TestCase):
         self.json_headers = {"Content-Type": "application/json"}
 
     def tearDown(self):
-        conn = psycopg2.connect(self.app.config["PG_CONNECT"])
+        conn = psycopg2.connect(**self.app.config["PG_INFO"])
         cur = conn.cursor()
         cur.execute("TRUNCATE mapping_vote CASCADE;")
         cur.execute("TRUNCATE mapping CASCADE;")
@@ -33,6 +33,7 @@ class ViewsTestCase(TestCase):
     def create_app(self):
         app = create_app()
         app.config["TESTING"] = True
+        app.config["ACCESS_KEYS"] = ["test"]
         return app
 
     def test_index(self):

@@ -15,3 +15,5 @@ nosetests.xml
 
 # Vagrant
 .vagrant
+
+config.py

@@ -1,7 +1,7 @@
 from __future__ import print_function
 from datetime import datetime
 import cStringIO
-import config
+from flask import current_app
 import errno
 import os
 import psycopg2
@@ -54,7 +54,7 @@ def export_db_dump(location):
     Returns:
         Path to the created archive.
     """
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     create_path(location)
     time_now = datetime.today()
 
@@ -96,7 +96,7 @@ def import_db_dump(archive_path):
     pxz_command = ["pxz", "--decompress", "--stdout", archive_path]
     pxz = subprocess.Popen(pxz_command, stdout=subprocess.PIPE)
 
-    conn = psycopg2.connect(config.PG_CONNECT)
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     try:
         cur = conn.cursor()
 
