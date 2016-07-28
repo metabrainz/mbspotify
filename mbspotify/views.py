@@ -39,7 +39,7 @@ def add():
     if not uri.startswith("spotify:album:"):
         raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
-    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     cur = conn.cursor()
 
     try:
@@ -84,7 +84,7 @@ def vote():
 
     spotify_uri = request.json["spotify_uri"]
 
-    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     cur = conn.cursor()
 
     try:
@@ -148,7 +148,7 @@ def mapping():
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
-    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     cur = conn.cursor()
 
     cur.execute("SELECT spotify_uri "
@@ -176,7 +176,7 @@ def mapping_spotify():
     if not uri.startswith("spotify:album:"):
         raise BadRequest("Incorrect Spotify URI. Only albums are supported right now.")
 
-    conn = psycopg2.connect(current_app.config["PG_CONNECT"])
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     cur = conn.cursor()
 
     cur.execute("""
@@ -196,7 +196,7 @@ def mapping_jsonp(mbid):
     if not validate_uuid(mbid):
         raise BadRequest("Incorrect MBID (UUID).")
 
-    conn = psycopg2.connect(current_app.config['PG_CONNECT'])
+    conn = psycopg2.connect(**current_app.config["PG_INFO"])
     cur = conn.cursor()
 
     cur.execute("SELECT mbid, spotify_uri "

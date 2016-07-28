@@ -1,0 +1,23 @@
+# CUSTOM CONFIGURATION
+
+# List of keys (strings) that is used to verify incoming requests
+ACCESS_KEYS = [
+    #"CHANGE_ME",
+]
+
+# Number of votes required to delete a mapping
+THRESHOLD = 4
+
+
+# LOGGING
+
+#LOG_FILE = {
+#    "filename": "./logs/log.txt",
+#    "max_bytes": 512 * 1024,  # optional
+#    "backup_count": 100,      # optional
+#}
+
+#LOG_SENTRY = {
+#    "dsn": "YOUR_SENTRY_DSN",
+#    "level": "WARNING",  # optional
+#}

@@ -3,15 +3,20 @@ import os
 import click
 import psycopg2
 import subprocess
-from mbspotify import config
+import mbspotify
 import mbspotify.db
 
 SQL_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'sql')
+app = mbspotify.create_app()
 
-
-def _run_psql(script, user=config.PG_SUPER_USER, database="template1"):
+def _run_psql(script,
+              host=app.config["PG_INFO"]["host"],
+              port=app.config["PG_INFO"]["port"],
+              user=app.config["PG_INFO"]["user"],
+              database=app.config["PG_INFO"]["database"]):
     script = os.path.join(SQL_DIR, script)
-    command = ['psql', '-p', str(config.PG_PORT),
+    command = ['psql', '-h', host,
+                       '-p', str(port),
                        '-U', user,
                        '-d', database,
                        '-f', script]
