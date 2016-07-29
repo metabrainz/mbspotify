@@ -1,13 +1,13 @@
 from __future__ import print_function
 import os
 import click
-import psycopg2
 import subprocess
 import mbspotify
 import mbspotify.db
 
 SQL_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'sql')
 app = mbspotify.create_app()
+
 
 def _run_psql(script,
               host=app.config["PG_INFO"]["host"],
@@ -28,25 +28,28 @@ cli = click.Group()
 
 
 @cli.command()
+@click.option("--create-db", is_flag=True)
 @click.option("--force", "-f", is_flag=True,
               help="Drop existing database and user.")
 @click.argument("archive", type=click.Path(exists=True), required=False)
-def init_db(archive, force):
+def init_db(archive, force, create_db):
     """Initializes the database and imports data if needed.
 
     The archive must be a .tar.xz produced by the dump command.
     """
-    if force:
-        exit_code = _run_psql('drop_db.sql')
-        if exit_code != 0:
-            raise Exception('Failed to drop existing database and user! '
-                            'Exit code: %i' % exit_code)
+    if create_db:
 
-    print('Creating user and a database...')
-    exit_code = _run_psql('create_db.sql')
-    if exit_code != 0:
-        raise Exception('Failed to create new database and user! '
-                        'Exit code: %i' % exit_code)
+        if force:
+            exit_code = _run_psql('drop_db.sql')
+            if exit_code != 0:
+                raise Exception('Failed to drop existing database and user! '
+                                'Exit code: %i' % exit_code)
+
+        print('Creating user and a database...')
+        exit_code = _run_psql('create_db.sql')
+        if exit_code != 0:
+            raise Exception('Failed to create new database and user! '
+                            'Exit code: %i' % exit_code)
 
     print('Creating tables...')
     _run_psql('create_tables.sql', user='mbspotify', database='mbspotify')
