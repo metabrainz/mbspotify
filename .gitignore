@@ -12,8 +12,6 @@ pip-delete-this-directory.txt
 .cache
 .coverage
 
-# Vagrant
-.vagrant
 
 # Configuration
 /consul_config.py
