@@ -1,8 +1,24 @@
 from __future__ import print_function
 from flask_testing import TestCase
+from flask import current_app
 from mbspotify import create_app
+import subprocess
 import psycopg2
 import json
+import os
+
+SQL_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'sql')
+
+
+def _run_psql(app, script, user=None, database=None):
+    script = os.path.join(SQL_DIR, script)
+    command = ['psql', '-h', app.config["PG_INFO"]["host"],
+               '-p', str(app.config["PG_INFO"]["port"]),
+               '-U', user or app.config["PG_INFO"]["user"],
+               '-d', database or app.config["PG_INFO"]["database"],
+               '-f', script]
+    exit_code = subprocess.call(command)
+    return exit_code
 
 
 class ViewsTestCase(TestCase):
@@ -20,20 +36,22 @@ class ViewsTestCase(TestCase):
             "00000000-0000-0000-0000-000000000006",
         ]
         self.json_headers = {"Content-Type": "application/json"}
+        _run_psql(current_app, 'create_tables.sql', user='mbspotify', database='mbspotify')
 
     def tearDown(self):
-        conn = psycopg2.connect(**self.app.config["PG_INFO"])
-        cur = conn.cursor()
-        cur.execute("TRUNCATE mapping_vote CASCADE;")
-        cur.execute("TRUNCATE mapping CASCADE;")
-        conn.commit()
-        cur.close()
-        conn.close()
+        #_run_psql(current_app, 'drop_db.sql')
+        #return
+        with psycopg2.connect(**self.app.config["PG_INFO"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute("DROP TABLE mapping_vote;")
+                cur.execute("DROP TABLE mapping;")
+                conn.commit()
 
     def create_app(self):
-        app = create_app()
-        app.config["TESTING"] = True
-        app.config["ACCESS_KEYS"] = ["test"]
+        app = create_app(config_path=os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'test_config.py'
+        ))
         return app
 
     def test_index(self):
@@ -92,7 +110,8 @@ class ViewsTestCase(TestCase):
         })
 
         # Let"s try voting multiple times as the same user
-        for _ in xrange(10):
+        # FIXME(roman): This doesn't work in Python 3
+        for _ in range(10):
             self.client.post(
                 "/mapping/vote?key=%s" % self.app.config["ACCESS_KEYS"][0],
                 headers=self.json_headers,

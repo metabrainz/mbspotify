@@ -1,7 +1,7 @@
 from __future__ import print_function
 from datetime import datetime
-import cStringIO
 from flask import current_app
+import io
 import errno
 import os
 import psycopg2
@@ -68,7 +68,7 @@ def export_db_dump(location):
                                stdout=archive)
 
         with tarfile.open(fileobj=pxz.stdin, mode="w|") as tar:
-            output = cStringIO.StringIO(time_now.isoformat(" "))
+            output = io.StringIO(time_now.isoformat(" "))
             add_tarfile(tar, os.path.join(archive_name, "TIMESTAMP"), output)
 
             tar.add(DUMP_LICENSE_FILE_PATH,
@@ -76,7 +76,7 @@ def export_db_dump(location):
 
             cur = conn.cursor()
             for table_name in _TABLES:
-                output = cStringIO.StringIO()
+                output = io.StringIO()
                 print(" - Copying table %s..." % table_name)
                 cur.copy_to(output, "(SELECT %s FROM %s)" %
                             (", ".join(_TABLES[table_name]), table_name))
