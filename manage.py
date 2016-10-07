@@ -64,7 +64,7 @@ def init_db(archive, force, create_db):
 
 
 @cli.command()
-@click.option("--location", "-l", default=os.path.join(os.getcwd(), 'export'),
+@click.option("--location", "-l", default=os.path.join("/", "data", "export"),
               show_default=True,
               help="Directory where dumps need to be created")
 @click.pass_context

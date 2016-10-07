@@ -1,0 +1,20 @@
+{{- define "KEY" -}}
+    {{ key (printf "docker-server-configs/MBSpotify/config.%s.json/%s" (env "DEPLOY_ENV") .) }}
+{{- end -}}
+
+{{if service "postgres-master"}}
+{{with index (service "postgres-master") 0}}
+PG_INFO = {
+    "host": "{{.Address}}",
+    "port": {{.Port}},
+    "user": "mbspotify",
+    "password": "mbspotify",
+    "database": "mbspotify_db",
+}
+{{end}}
+{{end}}
+
+# Number of votes required to delete a mapping
+THRESHOLD = {{template "KEY" "threshold"}}
+
+ACCESS_KEYS = []

@@ -15,7 +15,11 @@ def create_app():
     ))
     app.config.from_pyfile(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-        "..", "config.py"
+        '..', 'consul_config.py'
+    ), silent=True)
+    app.config.from_pyfile(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        '..', 'custom_config.py'
     ), silent=True)
 
     app.init_loggers(

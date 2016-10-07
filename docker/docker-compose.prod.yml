@@ -1,0 +1,41 @@
+# Compose file for use on production servers.
+version: "2"
+services:
+
+  mbspotify:
+    build:
+      context: ..
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      DEPLOY_ENV: "prod"
+      SERVICE_13033_NAME: "mbspotify"
+      SERVICE_13033_CHECK_TCP: "true"
+      SERVICE_13033_CHECK_INTERVAL: "15s"
+      SERVICE_13033_CHECK_TIMEOUT: "3s"
+    volumes:
+      - mbspotify-data:/data
+    network_mode: bridge
+    ports:
+      - "13033:13033"
+
+  mbspotify-nginx:
+    build:
+      context: ./nginx_custom
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      DEPLOY_ENV: "prod"
+      SERVICE_64180_NAME: "mbspotify-nginx"
+      SERVICE_64180_CHECK_HTTP: "/"
+      SERVICE_64180_CHECK_INTERVAL: "15s"
+      SERVICE_64180_CHECK_TIMEOUT: "3s"
+    links:
+      - mbspotify
+    network_mode: bridge
+    ports:
+      - "64180:64180"
+
+volumes:
+  mbspotify-data:
+    external: true

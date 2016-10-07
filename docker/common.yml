@@ -1,0 +1,18 @@
+# Docker Compose file with common services
+# See https://docs.docker.com/compose/extends/#extending-services
+version: "2"
+services:
+
+  db:
+    build:
+      context: ./pg_custom/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: mbspotify
+      POSTGRES_PASSWORD: mbspotify
+      POSTGRES_DB: mbspotify
+
+  nginx:
+    build:
+      context: ./nginx_custom/
+      dockerfile: Dockerfile

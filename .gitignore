@@ -8,12 +8,13 @@ pip-delete-this-directory.txt
 
 # Test results
 /cover/
-nosetests.xml
 .tox/
 .cache
 .coverage
 
-# Vagrant
-.vagrant
+# Application data
+/data
 
-config.py
+# Configuration
+/consul_config.py
+/custom_config.py
