@@ -1,0 +1,37 @@
+version: "2"
+services:
+
+  consulagent:
+    command: -server -bootstrap
+    image: progrium/consul
+    ports:
+      - "8500:8500"
+
+  git2consul:
+    command: --endpoint consulagent --port 8500 --config-file /etc/git2consul.d/config.json
+    image: cimpress/git2consul
+    restart: always
+    links:
+      - consulagent
+    volumes:
+      - ../:/tmp/mbspotify.git
+      - ./git2consul:/etc/git2consul.d
+
+  mbspotify:
+    build:
+        context: ..
+        dockerfile: ./Dockerfile
+    environment:
+      DEPLOY_ENV: prod
+    volumes:
+      - ../:/code
+      - ../data/app:/data
+
+  mbspotify-nginx:
+    build:
+        context: ./nginx_custom
+        dockerfile: ./Dockerfile
+    ports:
+      - "80:80"
+
+

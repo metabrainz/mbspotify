@@ -1,0 +1,25 @@
+.git
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Application data
+/data
+
+# Virtual environment
+env
+venv
+/build
+
+# Logs
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Configuration generated from Consul's KV storage
+/consul_config.py
+
+# Test results
+htmlcov
+.coverage

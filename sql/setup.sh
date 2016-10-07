@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Create the database
-psql -U postgres < create_db.sql
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Create the tables
-psql -U mbspotify mbspotify < create_tables.sql
+psql -h db -U mbspotify mbspotify < "$DIR/create_tables.sql"

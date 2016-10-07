@@ -1,0 +1,5 @@
+#!/bin/bash
+
+exec consul-template \
+     -consul=consulagent:8500 \
+     -config="/etc/consul-template/consul-template.conf"

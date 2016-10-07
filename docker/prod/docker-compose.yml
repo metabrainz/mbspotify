@@ -1,0 +1,40 @@
+# Docker Compose file for production
+version: "2"
+services:
+
+  db:
+    extends:
+      file: ./common.yml
+      service: db
+    volumes:
+      - ./data/pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+
+  redis:
+    image: redis:3.2.1
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    volumes:
+      - ./data/app:/data
+    ports:
+      - "3031:3031"
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  nginx:
+    extends:
+      file: ./common.yml
+      service: nginx
+    links:
+      - web:web
+    ports:
+      - "80:80"
+    restart: always
