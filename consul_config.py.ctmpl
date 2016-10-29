@@ -1,6 +1,11 @@
 {{- define "KEY" -}}
     {{ key (printf "docker-server-configs/MBSpotify/config.%s.json/%s" (env "DEPLOY_ENV") .) }}
 {{- end -}}
+{{- define "KEY_ARRAY" -}}
+    {{- range $index, $element := (key (printf "docker-server-configs/MeB/config.%s.json/%s" (env "DEPLOY_ENV") .) | parseJSON) -}}
+        "{{.}}",
+    {{- end -}}
+{{- end -}}
 
 {{if service "postgres-master"}}
 {{with index (service "postgres-master") 0}}
@@ -17,4 +22,6 @@ PG_INFO = {
 # Number of votes required to delete a mapping
 THRESHOLD = {{template "KEY" "threshold"}}
 
-ACCESS_KEYS = []
+ACCESS_KEYS = [
+    {{template "KEY_ARRAY" "access_keys"}}
+]

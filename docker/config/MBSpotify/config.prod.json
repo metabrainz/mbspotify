@@ -1,3 +1,4 @@
 {
-  "threshold": "4"
+  "threshold": "4",
+  "access_keys": "[\"example1\", \"example2\"]"
 }
