@@ -25,3 +25,7 @@ THRESHOLD = {{template "KEY" "threshold"}}
 ACCESS_KEYS = [
     {{template "KEY_ARRAY" "access_keys"}}
 ]
+
+LOG_SENTRY = {
+    'dsn': '''{{template "KEY" "sentry_dsn_private"}}''',
+}
