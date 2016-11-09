@@ -1,7 +1,7 @@
-git+https://github.com/metabrainz/python-brainzutils.git@464f1d4dd07c4000856e6c6e9ca6aa68696d20fc
-Flask-Testing==0.5.0
+git+https://github.com/metabrainz/python-brainzutils.git@v1.0.0
+Flask-Testing==0.6.1
 MarkupSafe==0.23
-psycopg2==2.6
+psycopg2==2.6.2
 click==6.6
-pytest==2.9.2
-pytest-cov==2.3.0
+pytest==3.0.3
+pytest-cov==2.4.0
