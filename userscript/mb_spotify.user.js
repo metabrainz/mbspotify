@@ -32,7 +32,7 @@ function injected() {
 
     var mbid = window.location.pathname.split("/")[2];
     $.ajax({
-        url: "http://mbspotify.musicbrainz.org/mapping-jsonp/" + mbid,
+        url: "https://mbspotify.musicbrainz.org/mapping-jsonp/" + mbid,
         data: JSON.stringify({"mbids": [mbid]}),
         dataType: "jsonp",
         jsonpCallback: "jsonCallback",
