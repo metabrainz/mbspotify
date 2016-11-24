@@ -1,4 +1,4 @@
-FROM python:2.7.12
+FROM metabrainz/python:3.5
 
 # PostgreSQL client
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -14,13 +14,15 @@ RUN mkdir /code
 WORKDIR /code
 
 # Python dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-                    build-essential \
-                    libffi-dev \
-                    libssl-dev \
-                    libxml2-dev \
-                    libxslt1-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+                       build-essential \
+                       git \
+                       libpq-dev \
+                       libffi-dev \
+                       libssl-dev \
+                       libxml2-dev \
+                       libxslt1-dev
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 

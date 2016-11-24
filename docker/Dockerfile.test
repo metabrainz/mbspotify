@@ -1,4 +1,4 @@
-FROM python:2.7.12
+FROM metabrainz/python:3.5
 
 ENV DOCKERIZE_VERSION v0.2.0
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
@@ -17,14 +17,16 @@ ENV PGPASSWORD "mbspotify"
 RUN mkdir /code
 WORKDIR /code
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-                    build-essential \
-                    libffi-dev \
-                    libssl-dev \
-                    libxml2-dev \
-                    libxslt1-dev \
-                    wget
+# Python dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+                       build-essential \
+                       git \
+                       libpq-dev \
+                       libffi-dev \
+                       libssl-dev \
+                       libxml2-dev \
+                       libxslt1-dev
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 

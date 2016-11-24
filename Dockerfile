@@ -1,20 +1,4 @@
-FROM python:2.7.12
-
-COPY ./docker/prod/environment /etc/consul_template_env.sh
-
-COPY ./docker/prod/docker-helpers/install_consul_template.sh \
-     ./docker/prod/docker-helpers/install_runit.sh \
-     /usr/local/bin/
-RUN chmod 755 /usr/local/bin/install_consul_template.sh /usr/local/bin/install_runit.sh && \
-    sync && \
-    install_consul_template.sh && \
-    rm -f \
-        /usr/local/bin/install_consul_template.sh \
-        /usr/local/bin/install_runit.sh
-
-#############
-# MBSpotify #
-#############
+FROM metabrainz/python:3.5
 
 # PostgreSQL client
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -30,13 +14,15 @@ RUN mkdir /code
 WORKDIR /code
 
 # Python dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-                    build-essential \
-                    libffi-dev \
-                    libssl-dev \
-                    libxml2-dev \
-                    libxslt1-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+                       build-essential \
+                       git \
+                       libpq-dev \
+                       libffi-dev \
+                       libssl-dev \
+                       libxml2-dev \
+                       libxslt1-dev
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 
@@ -48,14 +34,12 @@ COPY . /code/
 # Services #
 ############
 
-# Consul-template is already installed with install_consul_template.sh
-COPY ./docker/prod/uwsgi.service /etc/sv/uwsgi/run
-RUN chmod 755 /etc/sv/uwsgi/run && \
-    ln -sf /etc/sv/uwsgi /etc/service/
-
-# Configuration
-COPY ./docker/prod/uwsgi.ini /etc/uwsgi/uwsgi.ini
+# Consul Template service is already set up with the base image.
+# Just need to copy the configuration.
 COPY ./docker/prod/consul-template.conf /etc/consul-template.conf
 
+COPY ./docker/prod/uwsgi.service /etc/service/uwsgi/run
+RUN chmod 755 /etc/service/uwsgi/run
+COPY ./docker/prod/uwsgi.ini /etc/uwsgi/uwsgi.ini
+
 EXPOSE 13033
-ENTRYPOINT ["/usr/local/bin/runsvinit"]
