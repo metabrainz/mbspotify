@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE mapping (
+CREATE TABLE IF NOT EXISTS mapping (
     id          SERIAL,
     mbid        UUID,
     spotify_uri TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE mapping (
     is_deleted  BOOLEAN
 );
 
-CREATE TABLE mapping_vote (
+CREATE TABLE IF NOT EXISTS mapping_vote (
     id          SERIAL,
     mapping     INTEGER NOT NULL, -- references mapping
     cb_user     UUID

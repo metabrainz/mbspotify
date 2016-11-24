@@ -36,16 +36,16 @@ class ViewsTestCase(TestCase):
             "00000000-0000-0000-0000-000000000006",
         ]
         self.json_headers = {"Content-Type": "application/json"}
+
+        with psycopg2.connect(**self.app.config["PG_INFO"]) as conn:
+            with conn.cursor() as cur:
+                cur.execute("DROP TABLE IF EXISTS mapping_vote CASCADE;")
+                cur.execute("DROP TABLE IF EXISTS mapping      CASCADE;")
+                conn.commit()
         _run_psql(current_app, 'create_tables.sql', user='mbspotify', database='mbspotify')
 
     def tearDown(self):
-        #_run_psql(current_app, 'drop_db.sql')
-        #return
-        with psycopg2.connect(**self.app.config["PG_INFO"]) as conn:
-            with conn.cursor() as cur:
-                cur.execute("DROP TABLE mapping_vote;")
-                cur.execute("DROP TABLE mapping;")
-                conn.commit()
+        pass
 
     def create_app(self):
         app = create_app(config_path=os.path.join(
@@ -57,7 +57,7 @@ class ViewsTestCase(TestCase):
     def test_index(self):
         response = self.client.get("/")
         # Index page should ask users to piss off.
-        assert "Piss off!" in response.data
+        self.assertIn("Piss off!", str(response.data))
 
     def test_vote(self):
         # Adding a new mapping
@@ -109,8 +109,7 @@ class ViewsTestCase(TestCase):
             "mappings": [self.spotify_uri],
         })
 
-        # Let"s try voting multiple times as the same user
-        # FIXME(roman): This doesn't work in Python 3
+        # Let's try voting multiple times as the same user
         for _ in range(10):
             self.client.post(
                 "/mapping/vote?key=%s" % self.app.config["ACCESS_KEYS"][0],
