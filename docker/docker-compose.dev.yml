@@ -3,7 +3,7 @@ services:
 
   db:
     extends:
-      file: ./docker/common.yml
+      file: ./common.yml
       service: db
     volumes:
       - ./data/pgdata:/var/lib/postgresql/data/pgdata
