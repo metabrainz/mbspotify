@@ -11,6 +11,10 @@ into the MusicBrainz pages.
 The easiest way to set up a development environment is to use [Docker](https://www.docker.com/):
 
     $ docker-compose -f docker/docker-compose.dev.yml up --build
+    
+After starting it for the first time, initialize the database:
+
+    $ docker-compose -f docker/docker-compose.dev.yml run web python manage.py init_db
 
 After containers are created and running, you can access the application at
 http://localhost:80/.
