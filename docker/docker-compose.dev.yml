@@ -6,12 +6,14 @@ services:
       file: ./common.yml
       service: db
     volumes:
-      - ./data/pgdata:/var/lib/postgresql/data/pgdata
+      - ../data/pgdata:/var/lib/postgresql/data/pgdata
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
 
   web:
-    build: ..
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.dev
     ports:
       - "80:8080"
     depends_on:

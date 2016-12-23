@@ -3,9 +3,13 @@ version: "2"
 services:
 
   db:
-    extends:
-      file: ./common.yml
-      service: db
+    build:
+      context: ./pg_custom/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: mbspotify
+      POSTGRES_PASSWORD: mbspotify
+      POSTGRES_DB: mbspotify
 
   web_test:
     build:

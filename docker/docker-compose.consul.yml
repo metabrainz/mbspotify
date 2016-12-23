@@ -23,6 +23,7 @@ services:
         dockerfile: ./Dockerfile
     environment:
       DEPLOY_ENV: prod
+      CONSUL_HOST: git2consul
     volumes:
       - ../:/code
       - ../data/app:/data
