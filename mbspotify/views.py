@@ -12,7 +12,21 @@ main_bp = Blueprint('ws_review', __name__)
 
 @main_bp.route("/")
 def index():
-    return "<html>Piss off!</html>"
+    return (
+        '<html>'
+            '<head>'
+                '<title>Redirecting to our Github page...</title>'
+                '<meta http-equiv="refresh" content="1; url=https://github.com/metabrainz/mbspotify" />'
+                '<script type="text/javascript">'
+                    'window.location.href = "https://github.com/metabrainz/mbspotify"'
+                '</script>'
+            '</head>'
+            '<body>'
+                'If you are not automatically redirected, please click ' 
+                '<a href="https://github.com/metabrainz/mbspotify">here</a>.'
+            '</body>'
+        '</html>'
+    )
 
 
 @main_bp.route("/mapping/add", methods=["POST"])
