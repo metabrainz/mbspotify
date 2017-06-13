@@ -15,10 +15,10 @@ def index():
     return (
         '<html>'
             '<head>'
-                '<title>Redirecting to our Github page...</title>
+                '<title>Redirecting to our Github page...</title>'
                 '<meta http-equiv="refresh" content="1; url=https://github.com/metabrainz/mbspotify" />'
                 '<script type="text/javascript">'
-                    'window.location.href = "http://example.com"'
+                    'window.location.href = "https://github.com/metabrainz/mbspotify"'
                 '</script>'
             '</head>'
             '<body>'
