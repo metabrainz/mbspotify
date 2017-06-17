@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import Blueprint, request, Response, jsonify, current_app
+from flask import Blueprint, redirect, request, Response, jsonify, current_app
 from werkzeug.exceptions import BadRequest, ServiceUnavailable
 from mbspotify.decorators import key_required, jsonp
 from mbspotify.utils import validate_uuid
@@ -12,7 +12,8 @@ main_bp = Blueprint('ws_review', __name__)
 
 @main_bp.route("/")
 def index():
-    return "<html>Piss off!</html>"
+    """Redirect to project page on GitHub."""
+    return redirect("https://github.com/metabrainz/mbspotify", code=302)
 
 
 @main_bp.route("/mapping/add", methods=["POST"])
