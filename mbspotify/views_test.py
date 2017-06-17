@@ -55,9 +55,10 @@ class ViewsTestCase(TestCase):
         return app
 
     def test_index(self):
+        """Test that index page redirects to the project page on GitHub."""
         response = self.client.get("/")
-        # Index page should ask users to piss off.
-        self.assertIn("Piss off!", str(response.data))
+        self.assertStatus(response, 302)
+        self.assertRedirects(response, "https://github.com/metabrainz/mbspotify")
 
     def test_vote(self):
         # Adding a new mapping
