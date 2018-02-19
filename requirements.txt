@@ -1,7 +1,7 @@
 git+https://github.com/metabrainz/python-brainzutils.git@v1.0.0
 Flask-Testing==0.6.1
 MarkupSafe==0.23
-psycopg2==2.6.2
+psycopg2==2.7.3.2
 click==6.6
 pytest==3.0.3
 pytest-cov==2.4.0
