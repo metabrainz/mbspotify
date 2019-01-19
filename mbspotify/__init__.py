@@ -38,7 +38,7 @@ def create_app(config_path=None):
             sys.exit(-1)
 
         print("Loading consul config file {}".format(config_file))
-    app.config.from_pyfile(config_file, silent=True)
+        app.config.from_pyfile(config_file, silent=True)
 
     if config_path:
         app.config.from_pyfile(config_path)
