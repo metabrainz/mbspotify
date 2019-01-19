@@ -47,7 +47,6 @@ def create_app(config_path=None):
         sentry_config=app.config.get("LOG_SENTRY"),
     )
 
-    app.logger.error("Check Access Keys: {}".format(str(app.config['ACCESS_KEYS'])))
     # Blueprints
     from mbspotify.views import main_bp
     app.register_blueprint(main_bp)
