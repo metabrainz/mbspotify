@@ -26,7 +26,7 @@ RUN apt-get update \
 COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 
-RUN pip install uWSGI==2.0.13.1
+RUN pip install uWSGI==2.0.18
 
 COPY . /code/
 
