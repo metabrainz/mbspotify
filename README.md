@@ -29,5 +29,5 @@ To run all tests use:
 ## Community
 
 If you want to discuss something, go to *#metabrainz* IRC channel on
-irc.freenode.net. More info about available methods of getting in touch with
+irc.libera.chat. More info about available methods of getting in touch with
 community is available at https://wiki.musicbrainz.org/Communication.
